@@ -87,8 +87,8 @@ class OrderController extends Controller
 
     public function getMostSoldProduct()
     {
-        $order = $this->orderService->getMostSoldProduct();
+        $most_sold = $this->orderService->getMostSoldProduct();
 
-        return response()->json(OrderResource::collection(collect($order)));
+        return response()->json(['most_sold'=>$most_sold]);
     }
 }

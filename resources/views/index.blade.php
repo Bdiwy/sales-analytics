@@ -165,7 +165,6 @@
                     const description = current.weather[0].description;
                     const temp = current.main.temp;
 
-                    $('#weatherIcon').attr('src', `https://openweathermap.org/img/wn/${iconCode}@2x.png`);
                     $('#weatherDescription').text(description.charAt(0).toUpperCase() + description.slice(1));
                     $('#weatherTemp').text(`${temp.toFixed(1)}°C`);
                 },
@@ -191,9 +190,10 @@
                 url: '/api/orders/most-sold',
                 type: 'POST',
                 success: function (data) {
-                    $('#mostSoldProduct').text(`${data.product_name} (${data.total_quantity} sold)`);
-                },
-                error: function () {
+                    const productName = data.most_sold.original.product_name;
+                    const totalQuantity = data.most_sold.original.total_quantity;
+                    $('#mostSoldProduct').text(`${productName} (${totalQuantity} sold)`);
+                },error: function () {
                     $('#mostSoldProduct').text('Error fetching product.');
                 }
             });
@@ -204,6 +204,7 @@
         window.Echo.channel('orders')
             .listen('.order.created', () => {
                 fetchOrders();
+                fetchSalesAndTopProduct();
             })
             .error((error) => {
                 console.error('Channel subscription error:', error);

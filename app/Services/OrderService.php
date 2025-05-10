@@ -41,11 +41,6 @@ class OrderService
         return $this->orderRepo->deleteOrder($id);
     }
 
-    public function getOrdersByDateRange($startDate, $endDate)
-    {
-        return $this->orderRepo->getOrdersByDateRange($startDate, $endDate);
-    }
-
     public function getTotalSales()
     {
         return $this->orderRepo->getTotalSales();

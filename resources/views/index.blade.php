@@ -26,20 +26,6 @@
 
     <div class="card p-4">
         <h2 class="text-center mb-4">📦 Orders Dashboard</h2>
-        <div class="row g-3 mb-3">
-            <div class="col-md-6">
-                <label for="startDate" class="form-label">Start Date</label>
-                <input type="date" id="startDate" class="form-control" />
-            </div>
-            <div class="col-md-6">
-                <label for="endDate" class="form-label">End Date</label>
-                <input type="date" id="endDate" class="form-control" />
-            </div>
-        </div>
-        <div class="d-flex justify-content-end mb-3">
-            <button id="filterOrders" class="btn btn-primary">Filter Orders</button>
-        </div>
-
         <div class="table-responsive">
             <table id="ordersTable" class="table table-bordered table-hover align-middle">
                 <thead class="table-light">
@@ -93,36 +79,10 @@
             });
         };
 
-        window.fetchOrdersByDateRange = function (startDate, endDate, page = 1) {
-            $.ajax({
-                url: `/api/orders/date-range?startDate=${startDate}&endDate=${endDate}&page=${page}`,
-                type: 'GET',
-                success: function (data) {
-                    const orders = data.data;
-                    loadOrdersIntoTable(orders);
-                    updatePaginationLinks(data.links, startDate, endDate);
-                },
-                error: function () {
-                    showMessage('Error fetching orders for the selected date range.');
-                }
-            });
-        };
-
         fetchOrders();
         fetchWeather();
 
-        $('#filterOrders').click(function () {
-            const startDate = $('#startDate').val();
-            const endDate = $('#endDate').val();
-
-            if (startDate && endDate) {
-                fetchOrdersByDateRange(startDate, endDate);
-            } else {
-                showMessage('Please select both start and end dates.');
-            }
-        });
-
-        function updatePaginationLinks(links, startDate = null, endDate = null) {
+        function updatePaginationLinks(links) {
             const paginationContainer = $('#paginationLinks');
             paginationContainer.empty();
 
@@ -136,11 +96,11 @@
             const nextPage = getPageNumber(links.next);
 
             if (prevPage) {
-                paginationContainer.append(`<button class="btn btn-secondary" onclick="${startDate ? `fetchOrdersByDateRange('${startDate}', '${endDate}', ${prevPage})` : `fetchOrders(${prevPage})`}">Previous</button>`);
+                paginationContainer.append(`<button class="btn btn-secondary" onclick="${`fetchOrders(${prevPage})`}">Previous</button>`);
             }
 
             if (nextPage) {
-                paginationContainer.append(`<button class="btn btn-secondary" onclick="${startDate ? `fetchOrdersByDateRange('${startDate}', '${endDate}', ${nextPage})` : `fetchOrders(${nextPage})`}">Next</button>`);
+                paginationContainer.append(`<button class="btn btn-secondary" onclick="${`fetchOrders(${nextPage})`}">Next</button>`);
             }
         }
 
@@ -160,8 +120,6 @@
                             <td>${order.price}</td>
                             <td>${order.created_at}</td>
                             <td>
-                                <button class="btn btn-info btn-sm" onclick="viewOrder(${order.id})">View</button>
-                                <button class="btn btn-warning btn-sm" onclick="editOrder(${order.id})">Edit</button>
                                 <button class="btn btn-danger btn-sm" onclick="deleteOrder(${order.id})">Delete</button>
                             </td>
                         </tr>
@@ -174,14 +132,6 @@
             $('#messageContent').text(message);
             $('#messageModal').modal('show');
         }
-
-        window.viewOrder = function (id) {
-            showMessage('View order ' + id);
-        };
-
-        window.editOrder = function (id) {
-            showMessage('Edit order ' + id);
-        };
 
         window.deleteOrder = function (id) {
             $.ajax({

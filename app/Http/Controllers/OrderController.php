@@ -78,16 +78,6 @@ class OrderController extends Controller
         return response()->NotFound('Order not found');
     }
 
-    public function getOrdersByDateRange(Request $request)
-    {
-        $orders = $this->orderService->getOrdersByDateRange(
-            $request->input('start_date'),
-            $request->input('end_date')
-        );
-
-        return response()->json(OrderResource::collection(collect($orders)));
-    }
-
     public function getTotalSales()
     {
         $totalSales = $this->orderService->getTotalSales();

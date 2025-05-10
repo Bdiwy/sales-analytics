@@ -42,13 +42,6 @@ class OrderRepo
         return DB::table($this->table)->where('id', $id)->delete() > 0;
     }
 
-    public function getOrdersByDateRange($startDate, $endDate)
-    {
-        return DB::table($this->table)
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->get();
-    }
-
     public function getTotalSales()
     {
         return DB::table($this->table)->sum('price');

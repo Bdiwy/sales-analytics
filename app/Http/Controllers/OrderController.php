@@ -85,10 +85,17 @@ class OrderController extends Controller
         return response()->json(['total_sales' => $totalSales]);
     }
 
-    public function getMostSoldProduct()
+    public function getMostSoldProductPrice()
     {
-        $most_sold = $this->orderService->getMostSoldProduct();
+        $most_sold = $this->orderService->getMostSoldProductPrice();
 
         return response()->json(['most_sold'=>$most_sold]);
+    }
+
+    public function getMostSoldProducts()
+    {
+        $most_sold_products = $this->orderService->getMostSoldProducts();
+
+        return response()->json(['most_sold_products'=>$most_sold_products]);
     }
 }

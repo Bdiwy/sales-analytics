@@ -46,8 +46,13 @@ class OrderService
         return $this->orderRepo->getTotalSales();
     }
 
-    public function getMostSoldProduct()
+    public function getMostSoldProductPrice()
     {
-        return $this->orderRepo->getMostSoldProduct();
+        return $this->orderRepo->getMostSoldProductPrice();
+    }
+
+    public function getMostSoldProducts()
+    {
+        return $this->orderRepo->getMostSoldProducts();
     }
 }

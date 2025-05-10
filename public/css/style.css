@@ -8,3 +8,18 @@ body {
 .btn {
     min-width: 90px;
 }
+.ai-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.ai-image {
+    width: 100px;
+    height: 100px;
+}
+
+.ai-suggestions-text {
+    font-size: 14px;
+    color: #333;
+}

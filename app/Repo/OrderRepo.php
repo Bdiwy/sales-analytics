@@ -47,8 +47,13 @@ class OrderRepo
         return DB::table($this->table)->sum('price');
     }
 
-    public function getOrdersBy($condition)
+    public function getMostSoldProduct()
     {
-        return DB::table($this->table)->where($condition)->get();
+        $product= DB::table($this->table)
+                    ->select('product_name', \DB::raw('SUM(quantity) as total_quantity'))
+                    ->groupBy('product_name')
+                    ->orderByDesc('total_quantity')
+                    ->first();
+        return response()->json($product);
     }
 }

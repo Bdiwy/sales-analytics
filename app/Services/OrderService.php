@@ -46,8 +46,8 @@ class OrderService
         return $this->orderRepo->getTotalSales();
     }
 
-    public function getOrdersBy($condition)
+    public function getMostSoldProduct()
     {
-        return $this->orderRepo->getOrdersBy($condition);
+        return $this->orderRepo->getMostSoldProduct();
     }
 }

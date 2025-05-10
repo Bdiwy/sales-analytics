@@ -85,10 +85,10 @@ class OrderController extends Controller
         return response()->json(['total_sales' => $totalSales]);
     }
 
-    public function getOrdersBy(Request $request)
+    public function getMostSoldProduct()
     {
-        $orders = $this->orderService->getOrdersBy($request->input('condition'));
+        $order = $this->orderService->getMostSoldProduct();
 
-        return response()->json(OrderResource::collection(collect($orders)));
+        return response()->json(OrderResource::collection(collect($order)));
     }
 }

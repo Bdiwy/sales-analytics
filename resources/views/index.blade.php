@@ -12,14 +12,21 @@
 </head>
 <body>
     
-    <div class="container py-5">
-        <div class="card p-3 mb-4 bg-light">
-        <div class="d-flex align-items-center">
-            <img id="weatherIcon" src="" alt="Weather Icon" width="80" class="me-3" />
-            <div>
-                <h4 class="mb-1" id="weatherCity">Cairo</h4>
-                <p class="mb-0" id="weatherDescription">Loading...</p>
+   <div class="container py-5 text-center">
+    <div class="card p-4 mb-4 bg-light">
+        <div class="row justify-content-center">
+            <div class="col-md-3">
+                <h4 id="weatherCity">Cairo</h4>
+                <p id="weatherDescription">Loading...</p>
                 <strong id="weatherTemp" class="text-primary fs-4"></strong>
+            </div>
+            <div class="col-md-3">
+                <h4>Total Sales</h4>
+                <p id="totalSalesValue">Loading...</p>
+            </div>
+            <div class="col-md-3">
+                <h4>Most Sold Product</h4>
+                <p id="mostSoldProduct">Loading...</p>
             </div>
         </div>
     </div>
@@ -81,7 +88,8 @@
 
         fetchOrders();
         fetchWeather();
-
+        fetchSalesAndTopProduct();
+        
         function updatePaginationLinks(links) {
             const paginationContainer = $('#paginationLinks');
             paginationContainer.empty();
@@ -167,6 +175,32 @@
             });
         }
 
+        function fetchSalesAndTopProduct() {
+            $.ajax({
+                url: '/api/orders/total-sales',
+                type: 'POST',
+                success: function (data) {
+                    $('#totalSalesValue').text(`$${data.total_sales.toFixed(2)}`);
+                },
+                error: function () {
+                    $('#totalSalesValue').text('Error fetching sales.');
+                }
+            });
+
+            $.ajax({
+                url: '/api/orders/most-sold',
+                type: 'POST',
+                success: function (data) {
+                    $('#mostSoldProduct').text(`${data.product_name} (${data.total_quantity} sold)`);
+                },
+                error: function () {
+                    $('#mostSoldProduct').text('Error fetching product.');
+                }
+            });
+        }
+
+
+
         window.Echo.channel('orders')
             .listen('.order.created', () => {
                 fetchOrders();
@@ -174,7 +208,7 @@
             .error((error) => {
                 console.error('Channel subscription error:', error);
             });
-    });
+        });
 </script>
 </body>
 </html>

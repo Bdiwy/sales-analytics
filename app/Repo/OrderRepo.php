@@ -20,10 +20,11 @@ class OrderRepo
         ])->first();
     }
 
-    public function getAllOrders()
+    public function getAllOrders($perPage = 10)
     {
-        return DB::table($this->table)->get();
+        return DB::table($this->table)->paginate($perPage);
     }
+
 
     public function getOrderById($id)
     {

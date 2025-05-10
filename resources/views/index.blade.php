@@ -11,17 +11,18 @@
     @endif
 </head>
 <body>
-<div class="container py-5">
-    <div class="card p-3 mb-4 bg-light">
-    <div class="d-flex align-items-center">
-        <img id="weatherIcon" src="" alt="Weather Icon" width="80" class="me-3" />
-        <div>
-            <h4 class="mb-1" id="weatherCity">Cairo</h4>
-            <p class="mb-0" id="weatherDescription">Loading...</p>
-            <strong id="weatherTemp" class="text-primary fs-4"></strong>
+    
+    <div class="container py-5">
+        <div class="card p-3 mb-4 bg-light">
+        <div class="d-flex align-items-center">
+            <img id="weatherIcon" src="" alt="Weather Icon" width="80" class="me-3" />
+            <div>
+                <h4 class="mb-1" id="weatherCity">Cairo</h4>
+                <p class="mb-0" id="weatherDescription">Loading...</p>
+                <strong id="weatherTemp" class="text-primary fs-4"></strong>
+            </div>
         </div>
     </div>
-</div>
 
     <div class="card p-4">
         <h2 class="text-center mb-4">📦 Orders Dashboard</h2>
@@ -54,6 +55,7 @@
                 <tbody></tbody>
             </table>
         </div>
+        <div id="paginationLinks" class="d-flex justify-content-center mt-3"></div>
     </div>
 </div>
 
@@ -75,100 +77,126 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        $(document).ready(function () {
-            fetchOrders();
-            fetchWeather();
-            $('#filterOrders').click(function () {
-                const startDate = $('#startDate').val();
-                const endDate = $('#endDate').val();
-
-                if (startDate && endDate) {
-                    fetchOrdersByDateRange(startDate, endDate);
-                } else {
-                    showMessage('Please select both start and end dates.');
+    $(document).ready(function () {
+        window.fetchOrders = function (page = 1) {
+            $.ajax({
+                url: `/api/orders?page=${page}`,
+                type: 'GET',
+                success: function (data) {
+                    const orders = data.data;
+                    loadOrdersIntoTable(orders);
+                    updatePaginationLinks(data.links);
+                },
+                error: function () {
+                    showMessage('Error fetching orders.');
                 }
             });
+        };
 
-            function fetchOrders() {
-                $.ajax({
-                    url: '/api/orders',
-                    type: 'GET',
-                    success: function (data) {
-                        const orders = data; 
-                        loadOrdersIntoTable(orders);
-                    },
-                    error: function () {
-                        showMessage('Error fetching orders.');
-                    }
-                });
-            }
-
-            function fetchOrdersByDateRange(startDate, endDate) {
-                $.ajax({
-                    url: `/api/orders/date-range?startDate=${startDate}&endDate=${endDate}`,
-                    type: 'GET',
-                    success: function (data) {
-                        const orders = data; 
-                        loadOrdersIntoTable(orders);
-                    },
-                    error: function () {
-                        showMessage('Error fetching orders for the selected date range.');
-                    }
-                });
-            }
-
-            function loadOrdersIntoTable(orders) {
-                const tableBody = $('#ordersTable tbody');
-                tableBody.empty(); 
-
-                if (orders.length === 0) {
-                    tableBody.append('<tr><td colspan="6" class="text-center">No orders found.</td></tr>');
-                } else {
-                    orders.forEach(order => {
-                        tableBody.append(`
-                            <tr>
-                                <td>${order.id}</td>
-                                <td>${order.product_name}</td>
-                                <td>${order.quantity}</td>
-                                <td>${order.price}</td>
-                                <td>${order.created_at}</td>
-                                <td>
-                                    <button class="btn btn-info btn-sm" onclick="viewOrder(${order.id})">View</button>
-                                    <button class="btn btn-warning btn-sm" onclick="editOrder(${order.id})">Edit</button>
-                                    <button class="btn btn-danger btn-sm" onclick="deleteOrder(${order.id})">Delete</button>
-                                </td>
-                            </tr>
-                        `);
-                    });
+        window.fetchOrdersByDateRange = function (startDate, endDate, page = 1) {
+            $.ajax({
+                url: `/api/orders/date-range?startDate=${startDate}&endDate=${endDate}&page=${page}`,
+                type: 'GET',
+                success: function (data) {
+                    const orders = data.data;
+                    loadOrdersIntoTable(orders);
+                    updatePaginationLinks(data.links, startDate, endDate);
+                },
+                error: function () {
+                    showMessage('Error fetching orders for the selected date range.');
                 }
+            });
+        };
+
+        fetchOrders();
+        fetchWeather();
+
+        $('#filterOrders').click(function () {
+            const startDate = $('#startDate').val();
+            const endDate = $('#endDate').val();
+
+            if (startDate && endDate) {
+                fetchOrdersByDateRange(startDate, endDate);
+            } else {
+                showMessage('Please select both start and end dates.');
+            }
+        });
+
+        function updatePaginationLinks(links, startDate = null, endDate = null) {
+            const paginationContainer = $('#paginationLinks');
+            paginationContainer.empty();
+
+            const getPageNumber = (url) => {
+                if (!url) return null;
+                const params = new URLSearchParams(url.split('?')[1]);
+                return params.get('page');
+            };
+
+            const prevPage = getPageNumber(links.prev);
+            const nextPage = getPageNumber(links.next);
+
+            if (prevPage) {
+                paginationContainer.append(`<button class="btn btn-secondary" onclick="${startDate ? `fetchOrdersByDateRange('${startDate}', '${endDate}', ${prevPage})` : `fetchOrders(${prevPage})`}">Previous</button>`);
             }
 
-            function showMessage(message) {
-                $('#messageContent').text(message);
-                $('#messageModal').modal('show');
+            if (nextPage) {
+                paginationContainer.append(`<button class="btn btn-secondary" onclick="${startDate ? `fetchOrdersByDateRange('${startDate}', '${endDate}', ${nextPage})` : `fetchOrders(${nextPage})`}">Next</button>`);
             }
+        }
 
-            window.viewOrder = function (id) {
-                showMessage('View order ' + id);
-            }
+        function loadOrdersIntoTable(orders) {
+            const tableBody = $('#ordersTable tbody');
+            tableBody.empty();
 
-            window.editOrder = function (id) {
-                showMessage('Edit order ' + id);
+            if (orders.length === 0) {
+                tableBody.append('<tr><td colspan="6" class="text-center">No orders found.</td></tr>');
+            } else {
+                orders.forEach(order => {
+                    tableBody.append(`
+                        <tr>
+                            <td>${order.id}</td>
+                            <td>${order.product_name}</td>
+                            <td>${order.quantity}</td>
+                            <td>${order.price}</td>
+                            <td>${order.created_at}</td>
+                            <td>
+                                <button class="btn btn-info btn-sm" onclick="viewOrder(${order.id})">View</button>
+                                <button class="btn btn-warning btn-sm" onclick="editOrder(${order.id})">Edit</button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteOrder(${order.id})">Delete</button>
+                            </td>
+                        </tr>
+                    `);
+                });
             }
+        }
 
-            window.deleteOrder = function (id) {
-                    $.ajax({
-                        url: `/api/orders/${id}`,
-                        type: 'DELETE',
-                        success: function () {
-                            showMessage('Order deleted successfully.');
-                            fetchOrders();
-                        },
-                        error: function () {
-                            showMessage('Error deleting order.');
-                        }
-                    });
-            }
+        function showMessage(message) {
+            $('#messageContent').text(message);
+            $('#messageModal').modal('show');
+        }
+
+        window.viewOrder = function (id) {
+            showMessage('View order ' + id);
+        };
+
+        window.editOrder = function (id) {
+            showMessage('Edit order ' + id);
+        };
+
+        window.deleteOrder = function (id) {
+            $.ajax({
+                url: `/api/orders/${id}`,
+                type: 'DELETE',
+                success: function () {
+                    showMessage('Order deleted successfully.');
+                    fetchOrders();
+                },
+                error: function () {
+                    showMessage('Error deleting order.');
+                }
+            });
+        };
+
         function fetchWeather() {
             $.ajax({
                 url: 'api/weather-forecast',
@@ -190,14 +218,13 @@
         }
 
         window.Echo.channel('orders')
-            .listen('.order.created', (e) => {
+            .listen('.order.created', () => {
                 fetchOrders();
             })
             .error((error) => {
                 console.error('Channel subscription error:', error);
             });
-        });
-
-    </script>
+    });
+</script>
 </body>
 </html>

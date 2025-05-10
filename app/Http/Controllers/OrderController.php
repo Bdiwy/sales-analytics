@@ -24,12 +24,25 @@ class OrderController extends Controller
         return response()->json(new OrderResource((object) $order), 201);
     }
 
-    public function getAllOrders()
+    public function getAllOrders(Request $request)
     {
-        $orders = $this->orderService->getAllOrders();
+        $perPage = $request->input('perPage', 10);
+        $orders = $this->orderService->getAllOrders($perPage);
 
-        return response()->json(OrderResource::collection(collect($orders)));
+        return response()->json([
+            'data' => OrderResource::collection($orders),
+            'links' => [
+                'prev' => $orders->previousPageUrl(),
+                'next' => $orders->nextPageUrl(),
+            ],
+            'meta' => [
+                'current_page' => $orders->currentPage(),
+                'total_pages' => $orders->lastPage(),
+                'total_items' => $orders->total(),
+            ]
+        ]);
     }
+
 
     public function getOrderById($id)
     {

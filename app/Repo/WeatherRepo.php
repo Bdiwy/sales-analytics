@@ -6,20 +6,12 @@ use Illuminate\Support\Facades\Http;
 
 class WeatherRepo
 {
-    protected $apiUrl;
-    protected $apiKey;
-
-    public function __construct()
-    {
-        $this->apiUrl = 'http://api.openweathermap.org/data/2.5/forecast';
-        $this->apiKey = env('WEATHER_API_KEY');
-    }
     public function getForecastByCityId($cityId = 360630)
     {
     try {
-        $response = Http::get($this->apiUrl, [
-            'id' => $cityId,
-            'appid' => $this->apiKey,
+        $response = Http::get("http://api.openweathermap.org/data/2.5/forecast", [
+            'id' => "360630",
+            'appid' => "97f476dee0cf24a3fd18a19988b3242c",
             'units' => 'metric',
             'lang' => 'en'
         ]);

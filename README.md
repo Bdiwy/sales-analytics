@@ -181,9 +181,7 @@ The project includes basic test cases for APIs and real-time functionality using
    ```
 2. Tests cover:
    - `POST /orders` API for adding orders.
-   - `GET /analytics` API for retrieving analytics.
-   - WebSocket updates for new orders.
-
+   - `POST /total-sales` API for retrieving total sales.
 ---
 
 ## Evaluation Criteria 📝
@@ -208,7 +206,7 @@ The project addresses the evaluation criteria as follows:
 
 ## Notes 📌
 
-- **AI Usage**: Clearly documented above; Gemini assisted with frontend JavaScript, styling, and API prompt generation and this readme file
+- **AI Usage**: Clearly documented above; Gemini assisted with frontend JavaScript, styling, and API prompt generation , in testing this app and this readme file
 - **Manual Implementation**: All database queries, WebSocket logic, and weather API integration were written manually.
 - **Scalability**: The service and repository layers ensure the codebase is modular and maintainable.
 - **Demo Video**: Refer to the [Loom video](https://www.loom.com/share/b99247e41b9b45c382dd19c66d078571?sid=498ba11c-0567-494f-9f28-7d502c83d151) for a walkthrough of the application.

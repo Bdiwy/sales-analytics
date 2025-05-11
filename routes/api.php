@@ -6,7 +6,7 @@ use App\Http\Controllers\AiController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\WeatherController;
 
-Route::prefix("orders")->middleware('api')->controller(OrderController::class)->group(function () {
+Route::prefix("orders")->middleware(['api', 'throttle:60,1'])->controller(OrderController::class)->group(function () {
     Route::POST('/','create');
     Route::GET('/', 'getAllOrders');
     Route::PUT('/{id}', 'updateOrder');
@@ -16,6 +16,5 @@ Route::prefix("orders")->middleware('api')->controller(OrderController::class)->
     Route::POST('/most-sold', 'getMostSoldProductPrice');
 });
 
-Route::GET('/weather-forecast', [WeatherController::class, 'showForecast']);
-Route::GET('/product-suggestions', [AiController::class, 'showSuggestions']);
-
+Route::GET('/weather-forecast', [WeatherController::class, 'showForecast'])->middleware('throttle:60,1');
+Route::GET('/product-suggestions', [AiController::class, 'showSuggestions'])->middleware('throttle:60,1');

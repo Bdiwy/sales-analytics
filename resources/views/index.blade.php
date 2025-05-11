@@ -176,6 +176,7 @@
                 success: function () {
                     showMessage('Order deleted successfully.');
                     fetchOrders();
+                    aiSuggestionsText();
                 },
                 error: function () {
                     showMessage('Error deleting order.');

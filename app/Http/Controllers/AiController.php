@@ -33,7 +33,7 @@ class AiController extends Controller
         $productSuggestions = $this->geminiService->getProductSuggestions($orders, $weather);
 
         return response()->json([
-            'orders' => $orders['data'], 
+            'orders' => $orders, 
             'weather' => $weather,
             'suggestions' => $productSuggestions,
         ]);

@@ -54,7 +54,7 @@ class OrderRepo
                     ->groupBy('product_name')
                     ->orderByDesc('total_quantity')
                     ->first();
-        return response()->json($product);
+        return $product;
     }
 
     public function getMostSoldProducts()

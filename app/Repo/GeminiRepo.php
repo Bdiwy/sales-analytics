@@ -10,16 +10,10 @@ class GeminiRepo
 
     public function getSuggestedProduct($topOrders, $weatherCondition)
     {
-        Log::info('Weather Condition:', [$weatherCondition]);
-        Log::info('Top Orders:', [$topOrders]);
         try {
-            // Ensure $topOrders is an array and convert to string
             $topOrdersString = is_array($topOrders) ? implode(', ', $topOrders) : $topOrders;
-            // Ensure $weatherCondition is a string
             $weatherCondition = is_string($weatherCondition) ? $weatherCondition : 'unknown';
-
             $prompt = "Based on today's top selling products and the current weather condition: \"$weatherCondition\", suggest ONE best product to sell today. The list of top products is: $topOrdersString. Give only the product name with  explanation.";
-
             $response = Http::withOptions([
                 'verify' => false,
             ])->post($this->apiUrl, [

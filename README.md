@@ -99,7 +99,7 @@ Follow these steps to set up the project locally:
 
 1. **Clone the Repository**:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/Bdiwy/sales-analytics.git
    cd <project-directory>
    ```
 
